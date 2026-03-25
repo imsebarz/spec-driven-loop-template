@@ -11,16 +11,18 @@ Most agent workflows break down in one of two ways:
 1. the agent starts coding before the product is specified
 2. the plan drifts and nobody knows what is actually left
 
-This template fixes that by making four files first-class:
+This template fixes that by making a few files first-class:
 
 - `specs/*` → product and technical truth
 - `IMPLEMENTATION_PLAN.md` → prioritized remaining work
+- `PROMPT_discovery.md` → user interview + spec authoring
 - `PROMPT_plan.md` → planning/audit loop
 - `PROMPT_build.md` → implementation loop
 
 ## What’s included
 
 - **Ralph Loop** (`ralph.sh`)
+- **Discovery prompt** for interviewing the user and turning answers into specs
 - **Planning prompt** for reconciling specs, code, and roadmap
 - **Build prompt** for incremental implementation with tests
 - **Implementation plan** skeleton
@@ -60,6 +62,9 @@ Each task in the plan should define what success looks like from the acceptance 
 ├── PROMPT_plan.md
 ├── README.md
 ├── ralph.sh
+├── scripts/
+│   ├── discover-session.md
+│   └── discover.sh
 └── specs/
     ├── 01-architecture.md
     ├── 02-data-model.md
@@ -86,7 +91,20 @@ cd my-app
 ### 2. Customize the specs
 Edit `specs/*` until they actually describe your product.
 
-### 3. Run a planning pass
+### 3. Run discovery first if the product idea is still fuzzy
+```bash
+./scripts/discover.sh --agent claude
+```
+
+Use this mode when you want the AI to ask you questions about the product idea, target users, MVP, workflows, and architecture, then convert the answers into foundational specs. The script starts the agent with `PROMPT_discovery.md` so the first turn is already focused on product discovery.
+
+Expected result:
+- the AI interviews you in a few focused rounds
+- raw answers can be captured in `scripts/discover-session.md`
+- foundational `specs/*` files get authored or refined
+- `IMPLEMENTATION_PLAN.md` is updated from the clarified scope
+
+### 4. Run a planning pass
 ```bash
 ./ralph.sh plan 1
 ```
@@ -98,7 +116,7 @@ Expected result:
 - tasks prioritized
 - verification outcomes clarified
 
-### 4. Run build iterations
+### 5. Run build iterations
 ```bash
 ./ralph.sh build 5
 ```
