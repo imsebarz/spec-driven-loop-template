@@ -202,6 +202,22 @@ Useful next additions:
 - deployment model
 - testing strategy
 
+## Discovery-first workflow
+
+A practical discovery-first sequence looks like this:
+
+```bash
+./scripts/discover.sh --agent claude
+./ralph.sh plan 1
+./ralph.sh build 5
+```
+
+That gives you:
+- user interview
+- foundational specs
+- prioritized implementation plan
+- first execution loop
+
 ## Good usage patterns
 
 ### Do
@@ -216,6 +232,18 @@ Useful next additions:
 - leave placeholder scripts forever
 - mix operational instructions into the product specs
 - treat the plan as a status diary instead of a roadmap
+
+## Example project
+
+The template now includes a concrete example under:
+
+```text
+examples/meal-planner/
+```
+
+It shows what a minimal but believable spec set and implementation plan can look like for a real product idea.
+
+Use it as reference when teaching the loop how to move from idea → specs → plan.
 
 ## Making it your own
 
