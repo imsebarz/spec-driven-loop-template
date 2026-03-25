@@ -1,101 +1,64 @@
 # Spec-Driven Loop Template
 
-A public starter template for **spec-driven development (SDD)** using a lightweight autonomous loop (`ralph.sh`) plus a living `IMPLEMENTATION_PLAN.md`.
+A polished public starter for **spec-driven development (SDD)** with a lightweight autonomous loop (`ralph.sh`).
 
-This template is opinionated:
+This template is built for teams and solo builders who want agents to work from **specs first**, keep a **living implementation plan**, and ship in **small verified increments**.
 
-- Specs are the source of truth
-- The plan is always current
-- The loop alternates between **plan** and **build** work
-- Every build increment should leave the repo in a better, more testable state
-- Long-running agent work should be restart-safe
+## Why this exists
 
-## What this gives you
+Most agent workflows break down in one of two ways:
 
-- `specs/` for product and technical specifications
-- `IMPLEMENTATION_PLAN.md` for prioritized remaining work
-- `PROMPT_plan.md` to audit and refresh the plan
-- `PROMPT_build.md` to implement the highest-priority task
-- `ralph.sh` to run the loop with Claude Code or Codex
-- `AGENTS.md` for repo-local operational guidance
+1. the agent starts coding before the product is specified
+2. the plan drifts and nobody knows what is actually left
 
-## Recommended workflow
+This template fixes that by making four files first-class:
 
-### 1. Write the specs first
-Put product truth in `specs/*.md`.
+- `specs/*` → product and technical truth
+- `IMPLEMENTATION_PLAN.md` → prioritized remaining work
+- `PROMPT_plan.md` → planning/audit loop
+- `PROMPT_build.md` → implementation loop
 
-Typical files:
-- `01-architecture.md`
-- `02-data-model.md`
-- `03-editor.md`
-- `10-ui-design.md`
-- `15-mvp-scope.md`
+## What’s included
 
-### 2. Run a planning pass
-```bash
-./ralph.sh plan 1
-```
+- **Ralph Loop** (`ralph.sh`)
+- **Planning prompt** for reconciling specs, code, and roadmap
+- **Build prompt** for incremental implementation with tests
+- **Implementation plan** skeleton
+- **Operational guide** (`AGENTS.md`)
+- **Starter specs**
+- **MIT license**
+- **Contributing guide**
 
-This should:
-- audit `specs/*`
-- inspect the source tree
-- update `IMPLEMENTATION_PLAN.md`
-- define verification outcomes per task
+## Philosophy
 
-### 3. Run build iterations
-```bash
-./ralph.sh build 8
-```
+### 1. Specs are the source of truth
+The loop should derive work from `specs/*`, not from vibes.
 
-This should:
-- pick the highest-priority incomplete task
-- implement a real increment
-- run the required tests
-- update `IMPLEMENTATION_PLAN.md`
-- commit the work
+### 2. The plan is durable state
+If the agent crashes, times out, or loses context, `IMPLEMENTATION_PLAN.md` is the recovery surface.
 
-### 4. Repeat
-Use short loops. Planning loops keep the roadmap sane; build loops keep momentum.
+### 3. Small complete increments beat giant partials
+The ideal build iteration:
+- chooses one high-priority task
+- implements it completely
+- runs the required tests
+- updates the plan
+- commits the result
 
-## Core ideas
-
-### Specs are truth
-The loop should not invent product behavior. It should derive work from `specs/*`.
-
-### The plan is living state
-`IMPLEMENTATION_PLAN.md` is the recovery surface after crashes, token limits, or environment resets.
-
-### Small complete increments beat giant partials
-Prefer:
-- one vertical slice
-- tests included
-- plan updated
-- commit done
-
-## Quick start
-
-### Requirements
-- `git`
-- `bash`
-- one coding agent CLI:
-  - `claude`
-  - or `codex`
-
-### Run
-```bash
-chmod +x ./ralph.sh
-./ralph.sh plan 1
-./ralph.sh --agent codex build 5
-```
+### 4. Tests verify outcomes, not implementation style
+Each task in the plan should define what success looks like from the acceptance criteria.
 
 ## Repo structure
 
 ```text
 .
 ├── AGENTS.md
+├── CONTRIBUTING.md
 ├── IMPLEMENTATION_PLAN.md
+├── LICENSE
 ├── PROMPT_build.md
 ├── PROMPT_plan.md
+├── README.md
 ├── ralph.sh
 └── specs/
     ├── 01-architecture.md
@@ -104,13 +67,145 @@ chmod +x ./ralph.sh
     └── 15-mvp-scope.md
 ```
 
-## Tips
+## Quick start
 
-- Keep `AGENTS.md` operational, not narrative
-- Keep `IMPLEMENTATION_PLAN.md` prioritized
-- Derive tests from acceptance criteria
-- Commit early when the loop is doing meaningful work
-- If the agent crashes often, prefer smaller build loops
+### Requirements
+
+- `git`
+- `bash`
+- one coding agent CLI:
+  - `claude`
+  - or `codex`
+
+### 1. Clone and enter the repo
+```bash
+git clone https://github.com/imsebarz/spec-driven-loop-template.git my-app
+cd my-app
+```
+
+### 2. Customize the specs
+Edit `specs/*` until they actually describe your product.
+
+### 3. Run a planning pass
+```bash
+./ralph.sh plan 1
+```
+
+Expected result:
+- specs reviewed
+- source tree inspected
+- `IMPLEMENTATION_PLAN.md` updated
+- tasks prioritized
+- verification outcomes clarified
+
+### 4. Run build iterations
+```bash
+./ralph.sh build 5
+```
+
+Or with Codex:
+```bash
+./ralph.sh --agent codex build 5
+```
+
+Expected result:
+- the top task is selected
+- implementation happens in code, not just in docs
+- required tests run
+- the plan is updated
+- completed work is committed
+
+## Suggested cadence
+
+### Planning loop
+Use when:
+- specs changed
+- the repo drifted
+- the plan feels stale
+- the next task is unclear
+
+```bash
+./ralph.sh plan 1
+```
+
+### Build loop
+Use when:
+- the plan is already sane
+- you want execution
+- you want several incremental turns
+
+```bash
+./ralph.sh build 8
+```
+
+## Ralph loop behavior
+
+The included `ralph.sh` is intentionally simple but practical.
+
+It supports:
+- `plan` mode
+- `build` mode
+- `claude` or `codex`
+- iteration limits
+- per-iteration logs in `.ralph-logs/`
+
+It also includes a small amount of resilience:
+- keeps logs for every iteration
+- can auto-commit tiny interrupted changes
+- can stash larger interrupted work
+- helps future iterations recover from dirty state
+
+## Example commands
+
+```bash
+# one planning pass
+./ralph.sh plan 1
+
+# five implementation iterations with Claude
+./ralph.sh build 5
+
+# eight implementation iterations with Codex
+./ralph.sh --agent codex build 8
+```
+
+## Recommended spec set
+
+These starter files are enough to begin:
+
+- `01-architecture.md`
+- `02-data-model.md`
+- `10-ui-design.md`
+- `15-mvp-scope.md`
+
+Useful next additions:
+- auth
+- sync model
+- error handling
+- deployment model
+- testing strategy
+
+## Good usage patterns
+
+### Do
+- keep specs concrete
+- keep the plan prioritized
+- derive tests from acceptance criteria
+- prefer shared modules over app-local duplication
+- commit after meaningful increments
+
+### Don’t
+- let the loop code against an empty spec set
+- leave placeholder scripts forever
+- mix operational instructions into the product specs
+- treat the plan as a status diary instead of a roadmap
+
+## Making it your own
+
+You’ll probably want to customize:
+- commit scopes in `AGENTS.md`
+- prompts in `PROMPT_plan.md` / `PROMPT_build.md`
+- loop behavior in `ralph.sh`
+- starter spec files for your product domain
 
 ## License
 
